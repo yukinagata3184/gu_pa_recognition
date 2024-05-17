@@ -24,10 +24,10 @@ def hamming_window(frame):
     return frame * np.hamming(len(frame))
 
 def fft(frame, sampling_freq=44100, is_abs=False):
-    """! FFTを行う
+    """! FFTを行い振幅スペクトラムを求める
     @param frame [np.ndarray] FFTを行うフレームを格納した配列
     @param sampling_freq [int] 音声のサンプリング周波数
-    @is_abs [bool] FFTの結果を絶対値にするか否か
+    @param is_abs [bool] FFTの結果を絶対値にするか否か
     @retval frame [np.ndarray] FFTをかけた後の配列
     @retval fs [np.ndarray] x軸となる周波数を格納した配列
     """
