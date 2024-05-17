@@ -60,6 +60,26 @@ def lowpass_lifter(frame, cepstrum_threshold=30):
     frame[cepstrum_threshold:len(frame)-cepstrum_threshold] = 0
     return frame
 
+def get_formant(frame, sampling_freq=44100, num_get_formant=2):
+    """! フォルマント(対数パワースペクトラムの包絡線の頂点)を取得する
+    @param frame [np.ndarray] ケプストラムをフーリエ変換し対数パワースペクトラムの包絡線を抽出した配列
+    @param sampling_freq [int] 音声のサンプリング周波数
+    @param num_get_formant [int] 第何フォルマントまで取得するか
+    @retval formant_list [list] 第1フォルマントから順にnum_get_formantの数フォルマント周波数を格納したリスト
+    """
+    # frameの1要素(目盛)あたり何Hzかを定義
+    FS_ONE_SCALE = sampling_freq / len(frame)
+    formant_list = []
+    for axis in range(1, int(len(frame)/2)):
+        # 対数パワースペクトラムの包絡線の頂点か否かを判定
+        if frame[axis] > frame[axis-1] and frame[axis] > frame[axis+1]:
+            formant_list.append(FS_ONE_SCALE * axis)
+        # 指定の数フォルマント周波数を取得したら終了
+        if len(formant_list) >= num_get_formant:
+            break
+    
+    return formant_list
+
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from record2ndarray import record2ndarray
@@ -89,6 +109,7 @@ if __name__ == "__main__":
     ax[0, 2].set_ylabel("amplitude")
 
     frame = log(frame=frame)
+    log_power_spectrum = frame
     ax[0, 3].plot(fs[:int(FRAME_SIZE/2)], frame[:int(FRAME_SIZE/2)])
     ax[0, 3].set_title("log power spectrum")
     ax[0, 3].set_xlabel("freq[Hz]")
@@ -105,5 +126,21 @@ if __name__ == "__main__":
     ax[1, 1].set_title("quepstrum")
     ax[1, 1].set_xlabel("quefrency")
     ax[1, 1].set_ylabel("amplitude")
+
+    frame, fs = fft(frame=frame, is_abs=True)
+    ax[1, 2].plot(fs[:int(FRAME_SIZE/2)], frame[:int(FRAME_SIZE/2)])
+    ax[1, 2].set_title("log power spectrum")
+    ax[1, 2].set_xlabel("freq[Hz]")
+    ax[1, 2].set_ylabel("log power")
+
+    ax[1, 3].plot(fs[:int(FRAME_SIZE/2)], log_power_spectrum[:int(FRAME_SIZE/2)])
+    ax[1, 3].plot(fs[:int(FRAME_SIZE/2)], frame[:int(FRAME_SIZE/2)])
+    ax[1, 3].set_title("log power spectrum")
+    ax[1, 3].set_xlabel("freq[Hz]")
+    ax[1, 3].set_ylabel("log power")
+
+    formant_list = get_formant(frame=frame)
+    print("F1: " + str(formant_list[0]))
+    print("F2: " + str(formant_list[1]))
 
     plt.show()
