@@ -44,6 +44,13 @@ def log(frame):
     """
     return np.log(frame)
 
+def ifft(frame):
+    """! 逆フーリエ変換を行いケプストラムを求める
+    @param frame [np.ndarray] 対数パワースペクトラムを格納した配列
+    @return [np.ndarray] ケプストラムを格納した配列
+    """
+    return np.fft.ifft(frame)
+
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from record2ndarray import record2ndarray
@@ -77,5 +84,11 @@ if __name__ == "__main__":
     ax[0, 3].set_title("log power spectrum")
     ax[0, 3].set_xlabel("freq[Hz]")
     ax[0, 3].set_ylabel("log power")
+
+    frame = ifft(frame=frame)
+    ax[1, 0].plot(list(range(int(FRAME_SIZE/2))), frame[:int(FRAME_SIZE/2)])
+    ax[1, 0].set_title("quepstrum")
+    ax[1, 0].set_xlabel("quefrency")
+    ax[1, 0].set_ylabel("amplitude")
 
     plt.show()
