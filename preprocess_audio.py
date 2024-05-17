@@ -37,6 +37,13 @@ def fft(frame, sampling_freq=44100, is_abs=False):
     fs = np.fft.fftfreq(len(frame), 1/sampling_freq)
     return frame, fs
 
+def log(frame):
+    """! 対数パワースペクトラムを求める
+    @param frame [np.ndarray] 振幅スペクトラムを格納した配列
+    @return [np.ndarray] 対数パワースペクトラムを格納した配列
+    """
+    return np.log(frame)
+
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from record2ndarray import record2ndarray
@@ -64,5 +71,11 @@ if __name__ == "__main__":
     ax[0, 2].set_title("amplitude spectrum")
     ax[0, 2].set_xlabel("freq[Hz]")
     ax[0, 2].set_ylabel("amplitude")
+
+    frame = log(frame=frame)
+    ax[0, 3].plot(fs[:int(FRAME_SIZE/2)], frame[:int(FRAME_SIZE/2)])
+    ax[0, 3].set_title("log power spectrum")
+    ax[0, 3].set_xlabel("freq[Hz]")
+    ax[0, 3].set_ylabel("log power")
 
     plt.show()
