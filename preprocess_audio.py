@@ -15,14 +15,34 @@ def frame_cutout(amplitude_array, offset=4096, frame_size=1024):
     """
     return amplitude_array[offset:offset+frame_size]
 
+def hamming_window(frame, frame_size=1024):
+    """! フレーム切り出しした波形に周期性を持たせるためFFT前にハミング窓をかける
+    @param frame [np.ndarray] フレーム切り出しした配列
+    @param frame_size [int] フレームの要素数
+    @return [np.ndarray] ハミング窓をかけた配列
+    """
+    return frame * np.hamming(frame_size)
+
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from record2ndarray import record2ndarray
 
     FRAME_SIZE = 1024
+    fig, ax = plt.subplots(2, 4, figsize=(20, 10))
 
     print("マイクに向かって「パ～～」と言ってください")
     amplitude_array = record2ndarray()
+
     frame = frame_cutout(amplitude_array=amplitude_array, frame_size=FRAME_SIZE)
-    plt.plot(list(range(1024)), frame)
+    ax[0, 0].plot(list(range(FRAME_SIZE)), frame)
+    ax[0, 0].set_title("frame cutout")
+    ax[0, 0].set_xlabel("time")
+    ax[0, 0].set_ylabel("amplitude")
+
+    frame = hamming_window(frame=frame, frame_size=FRAME_SIZE)
+    ax[0, 1].plot(list(range(FRAME_SIZE)), frame)
+    ax[0, 1].set_title("hamming window")
+    ax[0, 1].set_xlabel("time")
+    ax[0, 1].set_ylabel("amplitude")
+    
     plt.show()
