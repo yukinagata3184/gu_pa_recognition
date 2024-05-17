@@ -83,8 +83,8 @@ def get_formant(frame, sampling_freq=44100, num_get_formant=2):
 def normalization(array, min_value=0, max_value=32768):
     """! ndarrayを正規化する
     @param array [np.ndarray] 正規化するndarray
-    @param min_value [int] 正規化の最小値
-    @param max_value [int] 正規化の最大値
+    @param min_value [int or float] 正規化の最小値
+    @param max_value [int or float] 正規化の最大値
     @return [np.ndarray] 正規化後のndarray
     """
     return (array - min_value) / (max_value - min_value)
