@@ -15,13 +15,13 @@ def frame_cutout(amplitude_array, offset=4096, frame_size=1024):
     """
     return amplitude_array[offset:offset+frame_size]
 
-def hamming_window(frame, frame_size=1024):
+def hamming_window(frame):
     """! フレーム切り出しした波形に周期性を持たせるためFFT前にハミング窓をかける
     @param frame [np.ndarray] フレーム切り出しした配列
     @param frame_size [int] フレームの要素数
     @return [np.ndarray] ハミング窓をかけた配列
     """
-    return frame * np.hamming(frame_size)
+    return frame * np.hamming(len(frame))
 
 def fft(frame, sampling_freq=44100, is_abs=False):
     """! FFTを行う
@@ -53,7 +53,7 @@ if __name__ == "__main__":
     ax[0, 0].set_xlabel("time")
     ax[0, 0].set_ylabel("amplitude")
 
-    frame = hamming_window(frame=frame, frame_size=FRAME_SIZE)
+    frame = hamming_window(frame=frame)
     ax[0, 1].plot(list(range(FRAME_SIZE)), frame)
     ax[0, 1].set_title("hamming window")
     ax[0, 1].set_xlabel("time")
