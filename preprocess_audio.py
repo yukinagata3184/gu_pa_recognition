@@ -23,6 +23,20 @@ def hamming_window(frame, frame_size=1024):
     """
     return frame * np.hamming(frame_size)
 
+def fft(frame, sampling_freq=44100, is_abs=False):
+    """! FFTを行う
+    @param frame [np.ndarray] FFTを行うフレームを格納した配列
+    @param sampling_freq [int] 音声のサンプリング周波数
+    @is_abs [bool] FFTの結果を絶対値にするか否か
+    @retval frame [np.ndarray] FFTをかけた後の配列
+    @retval fs [np.ndarray] x軸となる周波数を格納した配列
+    """
+    frame = np.fft.fft(frame)
+    if is_abs:
+        frame = np.abs(frame)
+    fs = np.fft.fftfreq(len(frame), 1/sampling_freq)
+    return frame, fs
+
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from record2ndarray import record2ndarray
@@ -44,5 +58,11 @@ if __name__ == "__main__":
     ax[0, 1].set_title("hamming window")
     ax[0, 1].set_xlabel("time")
     ax[0, 1].set_ylabel("amplitude")
-    
+
+    frame, fs = fft(frame=frame, is_abs=True)
+    ax[0, 2].plot(fs[:int(FRAME_SIZE/2)], frame[:int(FRAME_SIZE/2)])
+    ax[0, 2].set_title("amplitude spectrum")
+    ax[0, 2].set_xlabel("freq[Hz]")
+    ax[0, 2].set_ylabel("amplitude")
+
     plt.show()
