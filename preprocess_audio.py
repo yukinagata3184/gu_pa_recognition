@@ -51,6 +51,15 @@ def ifft(frame):
     """
     return np.fft.ifft(frame)
 
+def lowpass_lifter(frame, cepstrum_threshold=30):
+    """! ローパスリフタをかけ、高ケフレンシ帯域をカットする
+    @param frame [np.ndarray] ケプストラムを格納した配列
+    @param cepstrum_threshold [int] 低ケフレンシ帯域と高ケフレンシ帯域の境界となる値
+    @return [np.ndarray] 高ケフレンシ帯域をカットしたケプストラムの配列
+    """
+    frame[cepstrum_threshold:len(frame)-cepstrum_threshold] = 0
+    return frame
+
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from record2ndarray import record2ndarray
@@ -90,5 +99,11 @@ if __name__ == "__main__":
     ax[1, 0].set_title("quepstrum")
     ax[1, 0].set_xlabel("quefrency")
     ax[1, 0].set_ylabel("amplitude")
+
+    frame = lowpass_lifter(frame=frame)
+    ax[1, 1].plot(list(range(int(FRAME_SIZE/2))), frame[:int(FRAME_SIZE/2)])
+    ax[1, 1].set_title("quepstrum")
+    ax[1, 1].set_xlabel("quefrency")
+    ax[1, 1].set_ylabel("amplitude")
 
     plt.show()
