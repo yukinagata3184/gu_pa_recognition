@@ -5,6 +5,8 @@
 
 import numpy as np
 import time
+import matplotlib.pyplot as plt
+from matplotlib.image import imread
 import tensorflow
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.models import Sequential
@@ -59,9 +61,31 @@ def infer(model, normalization_max):
     print("Softmax:" + str(infer_result))
     return infer_result
 
+def judge_infer_result(infer_result):
+    """! 推論結果の出力に応じて「グー」または「パー」の画像を表示する
+    @param infer_result [np.ndarray] ニューラルネットワークからの推論結果を格納した配列
+    """
+    judge_index = np.argmax(infer_result)
+    plt.close() # 前の画像を閉じる
+    plt.gca().set_axis_off() # 画像から軸を消す
+    if judge_index == 0:
+        img = imread("img/janken_pa.png")
+        plt.imshow(img)
+        print("＊＊＊＊＊＊＊＊＊＊＊＊＊")
+        print("＊パーの可能性が高いです＊")
+        print("＊＊＊＊＊＊＊＊＊＊＊＊＊")
+    else:
+        img = imread("img/janken_gu.png")
+        plt.imshow(img)
+        print("＊＊＊＊＊＊＊＊＊＊＊＊＊")
+        print("＊グーの可能性が高いです＊")
+        print("＊＊＊＊＊＊＊＊＊＊＊＊＊")
+    plt.pause(0.01)
+
 if __name__ == "__main__":
     traindata, teacherdata, normalization_max = get_traindata(num_traindata=5, num_class=2)
     model = train(traindata=traindata, teacherdata=teacherdata)
     while True:
         infer_result = infer(model=model, normalization_max=normalization_max)
+        judge_infer_result(infer_result)
         print("終了する際はCtrl+Cを押してください")
