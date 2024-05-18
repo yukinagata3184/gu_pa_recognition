@@ -40,6 +40,28 @@ def train(traindata, teacherdata, num_input=1, num_hidden_neuron=16, num_output_
 
     return model
 
+def infer(model, normalization_max):
+    """! 「グ～～」または「パ～～」の音声を取得し推論を行う
+    @param model [keras.src.models.sequential.Sequential] 学習後のニューラルネットワークのオブジェクト
+    @param normalization_max [float] 正規化の最大値
+    @retval infer_result [np.ndarray] 推論結果をソフトマックス関数の形式で返す
+    """
+    # 推論するデータを格納する配列
+    inferdata = np.zeros((1, 1), dtype="float32")
+    print("「グ～～」または「パ～～」と言ってください")
+    time.sleep(1) # 前の音声が入らないよう取得時間の調整
+    amplitude_array = record2ndarray() # 推論するデータの取得
+    inferdata[0, 0] = preprocess_formant(amplitude_array)[0]
+    print("val:" + str(inferdata))
+    time.sleep(1) # 次の音声に入らないよう取得時間の調整
+    inferdata = normalization(inferdata, min_value=0, max_value=normalization_max) # 正規化
+    infer_result = model.predict(inferdata) # 推論
+    print("Softmax:" + str(infer_result))
+    return infer_result
+
 if __name__ == "__main__":
     traindata, teacherdata, normalization_max = get_traindata(num_traindata=5, num_class=2)
     model = train(traindata=traindata, teacherdata=teacherdata)
+    while True:
+        infer_result = infer(model=model, normalization_max=normalization_max)
+        print("終了する際はCtrl+Cを押してください")
