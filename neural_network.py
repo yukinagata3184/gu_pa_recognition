@@ -88,4 +88,4 @@ if __name__ == "__main__":
     while True:
         infer_result = infer(model=model, normalization_max=normalization_max)
         judge_infer_result(infer_result)
-        print("終了する際はCtrl+Cを押してください")
+        print("終了する際はこのウィンドウを閉じてください")
